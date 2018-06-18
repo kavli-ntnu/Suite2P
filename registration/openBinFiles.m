@@ -11,9 +11,17 @@ end
 
 for i = 1:numPlanes
     for j = 1:size(ops1,2)
-        ops1{i,j}.RegFile = fullfile(ops.RegFileRoot, ...
+        mouse_name = getOr(ops, 'mouse_name', []);
+        if isempty(mouse_name)
+            ops1{i,j}.RegFile = fullfile(ops.RegFileRoot, ...
+            sprintf('plane%d.bin',  ...
+            i + (j-1)*numPlanes));
+        else
+            ops1{i,j}.RegFile = fullfile(ops.RegFileRoot, ...
             sprintf('%s_%s_%s_plane%d.bin', ops.mouse_name, ops.date, ...
             ops.CharSubDirs, i + (j-1)*numPlanes));
+        end
+        
         regdir = fileparts(ops1{i,j}.RegFile);
         if ~exist(regdir, 'dir')
             mkdir(regdir);
@@ -23,9 +31,17 @@ for i = 1:numPlanes
         fid{i,j}              = fopen(ops1{i,j}.RegFile, 'w');
         
         if red_binary
-            ops1{i,j}.RegFile2 = fullfile(ops.RegFileRoot, ...
+            mouse_name = getOr(ops, 'mouse_name', []);
+            if isempty(mouse_name)
+                ops1{i,j}.RegFile2 = fullfile(ops.RegFileRoot, ...
+                sprintf('plane%d_RED.bin', ...
+                i + (j-1)*numPlanes));
+            else
+                ops1{i,j}.RegFile2 = fullfile(ops.RegFileRoot, ...
                 sprintf('%s_%s_%s_plane%d_RED.bin', ops.mouse_name, ops.date, ...
                 ops.CharSubDirs, i + (j-1)*numPlanes));
+            end
+            
             fidRED{i,j}              = fopen(ops1{i,j}.RegFile2, 'w');
         end
         

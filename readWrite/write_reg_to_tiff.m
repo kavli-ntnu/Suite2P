@@ -30,18 +30,35 @@ for k = 1:length(ops.SubDirs)
 %              ops.mimg_end(:,:,k) = mean(datend, 3);
 %         end
         
-        foldr = fullfile(ops.RegFileTiffLocation, ops.mouse_name, ops.date, ...
-            ops.SubDirs{k}, sprintf('Plane%d', iplane));
+        mouse_name = getOr(ops, 'mouse_name', []);
+        if isempty(mouse_name) % file names are fixed in make_db and no folder structure has to be assumed.
+            foldr = fullfile(ops.RegFileTiffLocation, sprintf('Plane%d', iplane));  
+        else
+            foldr = fullfile(ops.RegFileTiffLocation, ops.mouse_name, ops.date, ...
+                     ops.SubDirs{k}, sprintf('Plane%d', iplane));    
+        end
+
         if ~exist(foldr, 'dir')
             mkdir(foldr)
         end
         if isRED
-            partname = sprintf('%s_%s_%s_2P_plane%d_%d_RED.tif', ops.date, ops.SubDirs{k}, ...
-                ops.mouse_name, iplane, ix);
-        
+            mouse_name = getOr(ops, 'mouse_name', []);
+            if isempty(mouse_name) % file names are fixed in make_db and no folder structure has to be assumed.
+               partname = sprintf('2P_plane%d_%d_RED.tif',...
+                        iplane, ix);
+            else
+               partname = sprintf('%s_%s_%s_2P_plane%d_%d_RED.tif', ops.date, ops.SubDirs{k}, ...
+                        ops.mouse_name, iplane, ix);
+            end
         else
-            partname = sprintf('%s_%s_%s_2P_plane%d_%d.tif', ops.date, ops.SubDirs{k}, ...
-            ops.mouse_name, iplane, ix);
+            mouse_name = getOr(ops, 'mouse_name', []);
+            if isempty(mouse_name) % file names are fixed in make_db and no folder structure has to be assumed.
+               partname = sprintf('2P_plane%d_%d.tif',...
+                        iplane, ix);
+            else
+               partname = sprintf('%s_%s_%s_2P_plane%d_%d.tif', ops.date, ops.SubDirs{k}, ...
+                        ops.mouse_name, iplane, ix);
+            end
                     
         end
         fname = fullfile(foldr, partname);
