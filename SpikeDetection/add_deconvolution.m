@@ -14,13 +14,23 @@ ops0 = ops;
 for i =  1:length(ops.planesToProcess)    
     iplane  = ops0.planesToProcess(i);
     
-    fpath = sprintf('%s/F_%s_%s_plane%d_proc.mat', ops.ResultsSavePath, ...
+    mouse_name = getOr(ops0, 'mouse_name', []);
+    if isempty(mouse_name) % file names are fixed in make_db and no folder structure has to be assumed.
+        fpath = sprintf('%s/F_plane%d_proc.mat', ops.ResultsSavePath, iplane);    
+    else
+        fpath = sprintf('%s/F_%s_%s_plane%d_proc.mat', ops.ResultsSavePath, ...
         ops.mouse_name, ops.date, iplane);
+    end
     if exist(fpath, 'file')
         load(fpath);
     else
-        fpath = sprintf('%s/F_%s_%s_plane%d.mat', ops.ResultsSavePath, ...
-            ops.mouse_name, ops.date, iplane);
+        if isempty(mouse_name) % file names are fixed in make_db and no folder structure has to be assumed.
+             fpath = sprintf('%s/F_plane%d.mat', ops.ResultsSavePath, iplane);
+        else
+             fpath = sprintf('%s/F_%s_%s_plane%d.mat', ops.ResultsSavePath, ...
+                        ops.mouse_name, ops.date, iplane);
+        end
+ 
         dat = load(fpath);
     end
     
