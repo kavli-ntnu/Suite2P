@@ -29,6 +29,7 @@ if isfield(h.dat, 'FcellNeu')
 end
 
 box off
-set(gca,'fontsize',10)
-%set(gca, 'xcolor', 'w')
+axis off
+set(gca, 'xcolor', 'w')
+% plot([0 NT], [0 0], 'k', 'Linewidth', 2)
 % axis off
