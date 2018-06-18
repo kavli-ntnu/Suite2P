@@ -9,7 +9,7 @@ rchannel           = getOr(ops, {'rchannel'}, 2);
 red_align          = getOr(ops, {'AlignToRedChannel'}, 0);
 
 % if not empty, generate target image from specified experiment (useful if there is slow drift in data)
-targetImage        = getOr(ops, {'targetImage'}, []); 
+targetImage        = getOr(ops, {'targetImage'}, []);
 
 ntifs = sum(cellfun(@(x) numel(x), fs)); % total number of tiff files
 nfmax = max(1, round(ops.NimgFirstRegistration/ntifs)); % number of tiffs to take per file
@@ -63,7 +63,7 @@ if ~isempty(targetImage)
         iplane = mod(iplane + nFr/nchannels - 1, nplanes) + 1;
         data = loadFramesBuff(fs{k}(j).name, ichanset(1), ichanset(2), ichanset(3));
         data = reshape(data, Ly, Lx, nplanes, []);
-        
+
         IMG(:,:,:,indx+(1:size(data,4))) = data;
         indx = indx + size(data,4);
         j = j + 1;
@@ -72,13 +72,12 @@ if ~isempty(targetImage)
 else
     for k = 1:length(ops.SubDirs)
         iplane0 = 1;
-        nchannels = ops.nchannels;
-        if ~isempty(ops.expts)
-            if ismember(ops.expts(k), getOr(ops, 'expred', []))
-                nchannels = ops.nchannels_red;
-            end
+        nchannels_red = getOr(ops, 'nchannels_red', []);
+        if ~isempty(nchannels_red)
+            nchannels = ops.nchannels_red;
+        else
+            nchannels = ops.nchannels;
         end
-        
         for j = 1:length(fs{k})
             % compute number of frames in tiff if size different from previous
             if abs(nbytes - fs{k}(j).bytes)>1e3
@@ -94,7 +93,7 @@ else
             if nFr<(nchannels*nplanes*nfmax+offset)
                 continue;
             end
-            
+
             iplane0 = mod(iplane0-1, nplanes) + 1;
             % load red channel if red_align == 1
             if red_align
@@ -107,15 +106,15 @@ else
             iplane0 = iplane0 - nFr/nchannels;
             data = loadFramesBuff(fs{k}(j).name, ichanset(1),ichanset(2), ichanset(3));
             data = reshape(data, Ly, Lx, nplanes, []);
-            
+
             IMG(:,:,:,indx+(1:size(data,4))) = data;
             indx = indx + size(data,4);
-            
+
             if indx>ops.NimgFirstRegistration
                 break;
             end
         end
-        
+
         if indx>ops.NimgFirstRegistration
             break;
         end

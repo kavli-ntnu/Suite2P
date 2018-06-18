@@ -25,7 +25,3 @@ cc = mean(mean(mean(cc,1),3),4);
 ix       = ix - (6);
 
 BiDiPhase = -1 * ix;
-
-
-
-    
