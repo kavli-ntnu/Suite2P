@@ -21,27 +21,26 @@ idx = repmat([1:Lx],  Ly, 1);
 dreg = zeros(size(data), 'single');
 Valid = true(Ly, Lx);
 for i = 1:NT
-    Im = data(:,:,i);    
-    
+    Im = data(:,:,i);
+
     % apply offsets to indexing
     DX = dx(:,:,i) + idx;
     DY = dy(:,:,i) + idy;
-    
-    
+
+
     % compute valid area of frame
     xyInvalid = DX<0 | DX>Lx-1 | DY<1 | DY>Ly;
     Valid(xyInvalid) = false;
-    
+
     DX(xyInvalid) = 0;
     DY(xyInvalid) = 1;
-    
+
 %     DX = mod(DX, Lx);
 %     DY = mod(DY-1, Ly) + 1;
-%     
+%
     ind = DY + DX * Ly;
     Im = Im(ind);
     dreg(:,:,i) = Im;
-    
-    
-end
 
+
+end
