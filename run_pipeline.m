@@ -17,7 +17,13 @@ ops0.clustrules.diameter             = ops0.diameter;
 ops0.clustrules                      = get_clustrules(ops0.clustrules);
 
 % this loads ops1 and checks if processed binary files exist
-opath = sprintf('%s/regops_%s_%s.mat', ops0.ResultsSavePath, ops0.mouse_name, ops0.date);
+mouse_name = getOr(ops0, 'mouse_name', []);
+if isempty(mouse_name) % file names are fixed in make_db and no folder structure has to be assumed.
+    opath = sprintf('%s/regops.mat', ops0.ResultsSavePath);
+else
+    opath = sprintf('%s/regops_%s_%s.mat', ops0.ResultsSavePath, ops0.mouse_name, ops0.date);
+end
+
 processed = 1;
 if exist(opath, 'file')
     load(opath);
@@ -82,9 +88,16 @@ for i = [1:numel(ops1)]
         stat                         = classifyROI(stat, ops.clustrules);
         
         
-        save(sprintf('%s/F_%s_%s_plane%d.mat', ops.ResultsSavePath, ...
+        
+        mouse_name = getOr(ops, 'mouse_name', []);
+        if isempty(mouse_name) % file names are fixed in make_db and no folder structure has to be assumed.
+            save(sprintf('%s/F_plane%d.mat', ops.ResultsSavePath, ops.iplane),  'ops',  'stat',...
+            'Fcell', 'FcellNeu', '-v7.3')
+        else
+            save(sprintf('%s/F_%s_%s_plane%d.mat', ops.ResultsSavePath, ...
             ops.mouse_name, ops.date, ops.iplane),  'ops',  'stat',...
             'Fcell', 'FcellNeu', '-v7.3')
+        end
     end
 
     fclose('all');
