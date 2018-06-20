@@ -63,20 +63,7 @@ classdef Suite2PCompute < dj.Computed
         db.RegFileTiffLocation = tif_path;
         
         db.comments = suite_params.comments;
-
-        % Take care of possible Infs occuring for:
-        % outerNeuropil | SubPixel | 
-        if strcmp(suite_params.outerneuropil,'Inf')
-           db.outerNeuropil = Inf;
-        else
-           db.outerNeuropil = suite_params.outerneuropil;
-        end
-        if strcmp(suite_params.subpixel,'Inf')
-           db.SubPixel = Inf;
-        else
-           db.SubPixel = suite_params.subpixel;
-        end        
-        
+             
         db.mouse_name             = suite_params.mouse_name;
         db.expts                  = suite_params.expts; 
         db.diameter               = suite_params.diameter;
@@ -96,13 +83,17 @@ classdef Suite2PCompute < dj.Computed
         db.sig                    = suite_params.sig;  
         db.NavgFramesSVD          = suite_params.navgframessvd; 
         db.signalExtraction       = suite_params.signalextraction; 
-        db.innerNeuropil          = suite_params.innerneuropil; 
         db.imageRate              = suite_params.imagerate;   
         db.sensorTau              = suite_params.sensortau; 
         db.maxNeurop              = suite_params.maxneurop;
         db.redthres               = suite_params.redthres;
         db.redmax                 = suite_params.redmax;
         db.getZdrift              = suite_params.getzdrift;
+        db.SubPixel               = str2double(suite_params.subpixel);
+        db.outerNeuropil          = str2double(suite_params.outerneuropil);
+        db.innerNeuropil          = str2double(suite_params.innerneuropil); 
+        
+        
         % SET THIS ACCORDING TO WHAT YOU RETRIEVE FROM THE JOBS TABLE 
         if isinf(db.outerNeuropil)
             ops0.minNeuropilPixels = 400; % minimum number of pixels in neuropil surround
