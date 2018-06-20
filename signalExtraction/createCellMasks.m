@@ -25,7 +25,7 @@ for k = 1:Nk
         params      = FitMVGaus(ypix, xpix, lam, 2);
         
         % cell radius
-        stat(k).radius = sqrt(mean(params.eval));
+        stat(k).radius = max(3, stat(k).radius);
         
         % put cell mask into cellMasks for computing fluorescence
         cellMasks(k, ipix) = lam / sum(lam);
