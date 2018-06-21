@@ -1,6 +1,7 @@
 %%% Run Suite 2P 
-setenv('DJ_HOST', '129.241.14.39');
-setenv('DJ_USER', 'horsto');
+clc
+setenv('DJ_HOST', '');
+setenv('DJ_USER', '');
 setenv('DJ_PASS', '');
 
 %% Establish initial connection with database

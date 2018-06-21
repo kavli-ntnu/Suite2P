@@ -1,10 +1,13 @@
 %{
     # Jobs that Suite2P should process
-    job_id            :   char(16)               # Job ID (hash)
+    session_name      :   char(16)       # Session name
+    dataset_name      :   char(16)       # Dataset name (TIFRaw)
     ---
-    -> datajoint.Suite2PParams
-    repository_name   :   varchar(100)           # Short name for repository
-    tif_path          :   varchar(255)           # Path of raw tif(s) on repository
+    -> Suite2PParams
+    repository_name   :   varchar(100)   # Short name for repository
+    tif_path          :   varchar(255)   # Path of raw tif(s) on repository
+    diameter          :   int            # Cell diameter in pixels
+    imagerate         :   float          # Imaging rate (cumulative over planes!). For initialization of deconvolution kernel
     entry_time = CURRENT_TIMESTAMP :  timestamp  # Auto created timestamp
 %}
 

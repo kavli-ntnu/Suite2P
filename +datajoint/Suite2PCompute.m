@@ -42,7 +42,10 @@ classdef Suite2PCompute < dj.Computed
         % db.mouse_name = '';      
         repository_name = fetch1(datajoint.Suite2PJobs & key,'repository_name');
         tif_path_ = fetch1(datajoint.Suite2PJobs & key,'tif_path');
-        suite_params = fetch(datajoint.Suite2PParams & key,'*');
+        diameter = fetch1(datajoint.Suite2PJobs & key,'diameter');
+        imagerate = fetch1(datajoint.Suite2PJobs & key,'imagerate');
+        job_param_name = fetch1(datajoint.Suite2PJobs & key,'job_param_name');
+        suite_params = fetch(datajoint.Suite2PParams & sprintf('job_param_name = "%s"',job_param_name),'*');
         
         fprintf('Found a new Job with \nRepository: %s\nTIF Path: %s\n', repository_name, tif_path_);
         
@@ -66,10 +69,10 @@ classdef Suite2PCompute < dj.Computed
              
         db.mouse_name             = suite_params.mouse_name;
         db.expts                  = suite_params.expts; 
-        db.diameter               = suite_params.diameter;
+        db.diameter               = diameter;
         db.expred                 = ''; % Comment Horst: Not really needed.
         db.nchannels              = suite_params.nchannels; %
-        db.nchannels_red          = suite_params.nchannels_red; 
+        db.nchannels_red          = str2num(suite_params.nchannels_red); 
         db.AlignToRedChannel      = suite_params.aligntoredchannel;
         db.DeleteBin              = suite_params.deletebin; 
         db.REDbinary              = suite_params.redbinary; 
@@ -83,7 +86,7 @@ classdef Suite2PCompute < dj.Computed
         db.sig                    = suite_params.sig;  
         db.NavgFramesSVD          = suite_params.navgframessvd; 
         db.signalExtraction       = suite_params.signalextraction; 
-        db.imageRate              = suite_params.imagerate;   
+        db.imageRate              = imagerate;   
         db.sensorTau              = suite_params.sensortau; 
         db.maxNeurop              = suite_params.maxneurop;
         db.redthres               = suite_params.redthres;
@@ -127,7 +130,7 @@ classdef Suite2PCompute < dj.Computed
             identify_redcells_sourcery(db, ops0); 
 
         end 
-      
+       
 	    self.insert(key)
 		end
 	end
