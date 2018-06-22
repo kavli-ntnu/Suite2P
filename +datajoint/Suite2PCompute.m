@@ -10,37 +10,62 @@ classdef Suite2PCompute < dj.Computed
 	methods(Access=protected)
 		function makeTuples(self, key)
             
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%%%%%%%%%%%%%%%%%%% BASE PARAMETERS %%%%%%%%%%%%%%%%%%%%%%%%%%
-        toolbox_path = 'C:/work/python/Suite2P-Kavli';
-        oasis_path = 'C:/work/python/Suite2P-Kavli/OASIS_matlab';
-        ops0.useGPU = 0; % If you can use an Nvidia GPU in matlab this accelerates registration approx 3 times.
-        db.temp_tiff = 'C:/temp/temp.tif'; % Set this location to a fast local drive
+        %%%%%%%%%%%%%%%%%%%% BASE PARAMETERS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        config = 'config.ini';
+        fullpath = regexp(mfilename('fullpath'),filesep,'split');
+        basefolder_ = fullpath(1:end-2);
+        basefolder = strjoin(basefolder_, filesep);
         
-        % DRIVE MAPPING
-        drives(1).('moser_imaging') = 'L:';
-        drives(1).('lager') = 'N:';
-        drives(1).('datajoint') = 'J:';
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % USE GPU?
+        useGPU = datajoint.inifile(fullfile(basefolder,config),'read',{'suite2p_options','','useGPU'});
+        useGPU = useGPU{1,1};
+        if isempty(useGPU)
+            error('useGPU not defined in config - please specify (0 or 1)')
+        end
+        ops0.useGPU = str2double(useGPU);
         
+        % TEMP TIF LOCATION
+        temp_tiff = datajoint.inifile(fullfile(basefolder,config),'read',{'paths','','temp_tiff'});
+        temp_tiff = temp_tiff{1,1};
+        if isempty(temp_tiff)
+            error('temp_tiff not defined in config - please specify temp tiff path')
+        end
+        db.temp_tiff = temp_tiff;
+        
+        %%%%%%%%%%%%%%%%%%%% PATHS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        toolbox_path = datajoint.inifile(fullfile(basefolder,'config.ini'),'read',{'paths','','toolbox_path'});
+        toolbox_path = toolbox_path{1,1};
+        if isempty(toolbox_path) % empty
+            toolbox_path = toolbox_path_default;
+        end
+        
+        oasisfolder = basefolder_;
+        oasisfolder{end+1} = 'OASIS_matlab';
+        oasis_path_default = strjoin(oasisfolder,filesep);
+        oasis_path = datajoint.inifile(fullfile(basefolder,'config.ini'),'read',{'paths','','oasis_path'});
+        oasis_path = oasis_path{1,1};
+        if isempty(oasis_path) % empty
+            oasis_path = oasis_path_default;
+        end
+
+        %%%%%%%%%%%%%%%%%%%% RUN SUITE2P %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         clc; close all;
         
         if exist(toolbox_path, 'dir')
             addpath(genpath(toolbox_path)) % add local path to the toolbox
             ops0.toolbox_path = toolbox_path;
         else
-            error('toolbox_path does not exist, please change toolbox_path under base parameters');
+            error('toolbox_path does not exist, please change toolbox_path under base parameters or add to config.ini');
         end
         if exist(oasis_path, 'dir')
             addpath(genpath(oasis_path)) % add local path to OASIS
         else
-            error('oasis_path does not exist, please change oasis_path under base parameters');
+            error('oasis_path does not exist, please change oasis_path under base parameters or add to config.ini');
         end       
         
         % Retrieve entries and cast in struct like: 
         % db.mouse_name = '';      
-        repository_name = fetch1(datajoint.Suite2PJobs & key,'repository_name');
+        repository_name = fetch1(datajoint.Suite2PJobs & key,'repository_name');    
         tif_path_ = fetch1(datajoint.Suite2PJobs & key,'tif_path');
         diameter = fetch1(datajoint.Suite2PJobs & key,'diameter');
         imagerate = fetch1(datajoint.Suite2PJobs & key,'imagerate');
@@ -50,7 +75,12 @@ classdef Suite2PCompute < dj.Computed
         fprintf('Found a new Job with \nRepository: %s\nTIF Path: %s\n', repository_name, tif_path_);
         
         %%% LOOK UP FOLDER PATH BASED ON REPOSITORY NAME
-        drive = drives(1).(repository_name);
+        drive = datajoint.inifile(fullfile(basefolder,'config.ini'),'read',{'drives','',repository_name});
+        drive = drive{1,1};
+        if isempty(drive)
+            error('Repository mapped on this computer (drive) not found')
+        end
+        
         tif_path = strcat(drive,tif_path_);
         if exist(tif_path,'dir')
             fprintf('Found path %s\n',tif_path);
