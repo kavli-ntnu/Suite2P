@@ -36,7 +36,7 @@ classdef Suite2PCompute < dj.Computed
         toolbox_path = datajoint.inifile(fullfile(basefolder,'config.ini'),'read',{'paths','','toolbox_path'});
         toolbox_path = toolbox_path{1,1};
         if isempty(toolbox_path) % empty
-            toolbox_path = toolbox_path_default;
+            toolbox_path = basefolder;
         end
         
         oasisfolder = basefolder_;
