@@ -8,4 +8,10 @@ setenv('DJ_PASS', '');
 dj.conn()
 
 %% Now run things in a loop... 
+while true
+disp(datetime('now'))
+disp('Starting a new parpopulate command in 30 seconds ...')
+pause(30)
+
 parpopulate(datajoint.Suite2PCompute)
+end
