@@ -100,7 +100,7 @@ classdef Suite2PCompute < dj.Computed
         db.mouse_name             = suite_params.mouse_name;
         db.expts                  = suite_params.expts; 
         db.diameter               = diameter;
-        db.expred                 = ''; % Comment Horst: Not really needed.
+        db.expred                 = 1; % Comment Horst: Not really needed.But needs to be something.
         db.nchannels              = suite_params.nchannels; %
         db.nchannels_red          = str2num(suite_params.nchannels_red); 
         db.AlignToRedChannel      = suite_params.aligntoredchannel;
@@ -150,10 +150,10 @@ classdef Suite2PCompute < dj.Computed
             % creates mean red channel image aligned to green channel
             % use this if you didn't get red channel during registration
             % OR you have a separate experiment with red and green just for this
-            red_expts = ismember(db.expts, getOr(db, 'expred', []));
-            if ~ops0.redMeanImg || sum(red_expts)==0
-                run_REDaddon_sourcery(db, ops0);
-            end
+            %red_expts = ismember(db.expts, getOr(db, 'expred', []));
+            %if ~ops0.redMeanImg || sum(red_expts)==0
+            %    run_REDaddon_sourcery(db, ops0);
+            %end
 
             % identify red cells in mean red channel image
             % fills dat.stat.redcell, dat.stat.notred, dat.stat.redprob

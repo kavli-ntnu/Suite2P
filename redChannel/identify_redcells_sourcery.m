@@ -7,15 +7,27 @@ redcells = [];
 for i = 1:length(ops.planesToProcess)
     
     iplane  = ops.planesToProcess(i);
+    mouse_name = getOr(ops0, 'mouse_name', []);
+
     %%
     try
-        fname = sprintf('%s/F_%s_%s_plane%d.mat', ops.ResultsSavePath, ops.mouse_name, ops.date, iplane);
+        if isempty(mouse_name) % file names are fixed in make_db and no folder structure has to be assumed.
+            fname = sprintf('%s/F_plane%d.mat', ops.ResultsSavePath, iplane);
+        else
+            fname = sprintf('%s/F_%s_%s_plane%d.mat', ops.ResultsSavePath, ops.mouse_name, ops.date, iplane);
+        end
+        
         dat = load(fname);
         while isfield(dat, 'dat')
             dat = dat.dat;
         end
     catch
-        fname = sprintf('%s/F_%s_%s_plane%d_proc.mat', ops.ResultsSavePath, ops.mouse_name, ops.date, iplane, ops.Nk);
+        if isempty(mouse_name) % file names are fixed in make_db and no folder structure has to be assumed.
+            fname = sprintf('%s/F_plane%d_proc.mat', ops.ResultsSavePath, iplane);
+        else
+            fname = sprintf('%s/F_%s_%s_plane%d_proc.mat', ops.ResultsSavePath, ops.mouse_name, ops.date, iplane);
+        end
+        
         dat = load(fname);
         while isfield(dat, 'dat')
             dat = dat.dat;
