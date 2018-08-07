@@ -21,6 +21,7 @@ for i =  1:length(ops.planesToProcess)
         fpath = sprintf('%s/F_%s_%s_plane%d_proc.mat', ops.ResultsSavePath, ...
         ops.mouse_name, ops.date, iplane);
     end
+    
     if exist(fpath, 'file')
         load(fpath);
     else
@@ -30,7 +31,6 @@ for i =  1:length(ops.planesToProcess)
              fpath = sprintf('%s/F_%s_%s_plane%d.mat', ops.ResultsSavePath, ...
                         ops.mouse_name, ops.date, iplane);
         end
- 
         dat = load(fpath);
     end
     
@@ -121,8 +121,10 @@ for i =  1:length(ops.planesToProcess)
     % neuropil-corrected trace
     %     stat = run_deconvolution3(ops, dat);
     
-    dat.stat = stat;    
+    dat.stat = stat;
+    dat.ops = ops;
+    dat.Ff = Ff;
         
-    save(fpath, '-struct', 'dat')    
+    save(fpath, 'dat')    
 end
 %

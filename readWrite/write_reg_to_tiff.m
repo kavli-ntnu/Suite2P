@@ -29,14 +29,13 @@ for k = 1:length(ops.SubDirs)
 %         if nframesleft<=0
 %              ops.mimg_end(:,:,k) = mean(datend, 3);
 %         end
-        
         mouse_name = getOr(ops, 'mouse_name', []);
         if isempty(mouse_name) % file names are fixed in make_db and no folder structure has to be assumed.
             foldr = fullfile(ops.RegFileTiffLocation, sprintf('Plane%d', iplane));  
         else
             foldr = fullfile(ops.RegFileTiffLocation, ops.mouse_name, ops.date, ...
                      ops.SubDirs{k}, sprintf('Plane%d', iplane));    
-        end
+        end        
 
         if ~exist(foldr, 'dir')
             mkdir(foldr)
@@ -50,6 +49,7 @@ for k = 1:length(ops.SubDirs)
                partname = sprintf('%s_%s_%s_2P_plane%d_%d_RED.tif', ops.date, ops.SubDirs{k}, ...
                         ops.mouse_name, iplane, ix);
             end
+        
         else
             mouse_name = getOr(ops, 'mouse_name', []);
             if isempty(mouse_name) % file names are fixed in make_db and no folder structure has to be assumed.

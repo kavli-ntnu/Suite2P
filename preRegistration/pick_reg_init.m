@@ -1,5 +1,5 @@
 % correlate frames with each other
-% sort frames by correlations
+% sort frames by correlations 
 % take mean image as mean over most correlated frames
 
 function mimg = pick_reg_init(data)
@@ -8,7 +8,7 @@ dd = bsxfun(@minus, data, mean(mean(data,1),2));
 
 % WHITENING???
 % for i = 1:size(data,3)
-%    d0 = dd(:,:,i);
+%    d0 = dd(:,:,i); 
 %    fd0 = fft2(d0);
 %    dd(:,:,i) = real(ifft2(fd0./abs(fd0)));
 % end

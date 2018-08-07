@@ -379,7 +379,6 @@ else
     end
 end
 
-
 savepath = sprintf('%s/', ops.ResultsSavePath);
 if ~exist(savepath, 'dir')
     mkdir(savepath)
@@ -392,4 +391,5 @@ else
     save(sprintf('%s/regops_%s_%s.mat', ops.ResultsSavePath, ...
         ops.mouse_name, ops.date),  'ops1')
 end
-%%
+
+

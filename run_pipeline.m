@@ -88,7 +88,6 @@ for i = [1:numel(ops1)]
         stat                         = classifyROI(stat, ops.clustrules);
         
         
-        
         mouse_name = getOr(ops, 'mouse_name', []);
         if isempty(mouse_name) % file names are fixed in make_db and no folder structure has to be assumed.
             save(sprintf('%s/F_plane%d.mat', ops.ResultsSavePath, ops.iplane),  'ops',  'stat',...
@@ -98,6 +97,7 @@ for i = [1:numel(ops1)]
             ops.mouse_name, ops.date, ops.iplane),  'ops',  'stat',...
             'Fcell', 'FcellNeu', '-v7.3')
         end
+    
     end
 
     fclose('all');

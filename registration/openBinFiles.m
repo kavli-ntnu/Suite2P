@@ -6,7 +6,7 @@ fid    = cell(numPlanes, size(ops1,2));
 fidRED = cell(numPlanes, size(ops1,2));
 fidIntpol = [];
 if ops.interpolateAcrossPlanes == 1 && ~isempty(ops.RegFileBinLocation)
-    fidIntpol = cell(numPlanes, size(xFOVs,2));
+    fidIntpol = cell(numPlanes, size(ops1,2));
 end
 
 for i = 1:numPlanes
@@ -20,6 +20,7 @@ for i = 1:numPlanes
             ops1{i,j}.RegFile = fullfile(ops.RegFileRoot, ...
             sprintf('%s_%s_%s_plane%d.bin', ops.mouse_name, ops.date, ...
             ops.CharSubDirs, i + (j-1)*numPlanes));
+        
         end
         
         regdir = fileparts(ops1{i,j}.RegFile);
@@ -41,6 +42,7 @@ for i = 1:numPlanes
                 sprintf('%s_%s_%s_plane%d_RED.bin', ops.mouse_name, ops.date, ...
                 ops.CharSubDirs, i + (j-1)*numPlanes));
             end
+            
             
             fidRED{i,j}              = fopen(ops1{i,j}.RegFile2, 'w');
         end

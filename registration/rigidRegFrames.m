@@ -25,7 +25,7 @@ for iBatch = 1:nBatches
         dataBatch = single(data(:,:,idx));
     end
     [Ly, Lx, NT] = size(dataBatch);
-
+    
     Ny = ifftshift([-fix(Ly/2):ceil(Ly/2)-1]);
     Nx = ifftshift([-fix(Lx/2):ceil(Lx/2)-1]);
     [Nx,Ny] = meshgrid(Nx,Ny);
@@ -39,7 +39,7 @@ for iBatch = 1:nBatches
     else
         dsBatch = ds(idx, :);
     end
-
+    
     if ops.useGPU % do it batch-by-batch
         dph         = 2*pi*(bsxfun(@times, dsBatch(1,1,:), Ny) + ...
             bsxfun(@times, dsBatch(:,2,:), Nx));
@@ -53,6 +53,6 @@ for iBatch = 1:nBatches
             dregBatch(:,:,i) = real(ifft2(fdata .* exp(1i * dph)));
         end
     end
-
+    
     dreg(:,:,idx) = dregBatch;
 end

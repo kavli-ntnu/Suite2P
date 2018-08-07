@@ -8,7 +8,6 @@ for i = 1:length(ops.planesToProcess)
     
     iplane  = ops.planesToProcess(i);
     mouse_name = getOr(ops0, 'mouse_name', []);
-
     %%
     try
         if isempty(mouse_name) % file names are fixed in make_db and no folder structure has to be assumed.
