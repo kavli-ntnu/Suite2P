@@ -54,6 +54,16 @@ if ops.doRegistration
     if isempty(IMG)
         error('ERROR: There are too few frames per plane for processing!');
     end
+    
+    % from random frames get scaling factor (if uint16, scale by 2)
+    if ~isfield(ops, 'scaleTiff')
+        if max(IMG(:)) > 2^15
+            ops.scaleTiff = 2;
+        else
+            ops.scaleTiff = 1;
+        end
+    end
+    
     % compute phase shifts from bidirectional scanning
     if ops.dobidi
         ops.BiDiPhase = BiDiPhaseOffsets(IMG);
@@ -84,7 +94,7 @@ if ops.doRegistration
     
     if ops.alignTargetImages % align target images of all planes to each other
         % (reasonable only if interplane distance during imaging was small)
-        newTargets = getImgOverPlanes(ops1, ops.planesToInterpolate);
+        newTargets = getImgOverPlanes(ops1);
         for i = 1:length(ops.planesToInterpolate)
             for l = 1:size(xFOVs,2)
                 ops1{ops.planesToInterpolate(i),l}.mimg = newTargets(:,:,i,l);
@@ -190,9 +200,9 @@ for k = 1:length(fs)
         % get the registration offsets for each frame
         if ops.doRegistration
             if ops.nonrigid
-                [dsall, ops1] = nonrigidOffsets(data, j, iplane0, ops, ops1);
+                [dsall, ops1] = nonrigidOffsets(data, k, j, iplane0, ops, ops1);
             else
-                [dsall, ops1] = rigidOffsets(data, j, iplane0, ops, ops1);
+                [dsall, ops1] = rigidOffsets(data, k, j, iplane0, ops, ops1);
             end
         end
         
@@ -240,16 +250,19 @@ for k = 1:length(fs)
             indframes = ifr0:nplanes:size(data,3);
             for l = 1:size(xFOVs,2)
                 dwrite = dreg(yFOVs(:,l),xFOVs(:,l),indframes);
-                fwrite(fid{i,l}, dwrite, class(data));
-                ops1{i,l}.Nframes(k) = ops1{i,l}.Nframes(k) + size(dwrite,3);
+                dwrite = int16(dwrite / ops.scaleTiff);
+                fwrite(fid{i,l}, dwrite, 'int16');
                 ops1{i,l}.mimg1 = ops1{i,l}.mimg1 + sum(dwrite,3);
                 
                 if red_mean_expt || red_align
                     dwrite = dreg2(yFOVs(:,l),xFOVs(:,l),indframes);
+                    if ops.scaleTiff>1
+                        dwrite = int16(dwrite / ops.scaleTiff);
+                    end
                     ops1{i,l}.mimgRED = ops1{i,l}.mimgRED + sum(dwrite,3);
                 end
                 if red_binary
-                    fwrite(fidRED{i,l}, dwrite, class(data));
+                    fwrite(fidRED{i,l}, dwrite, 'int16');
                 end
             end
         end
@@ -327,29 +340,31 @@ if ~isempty(ops.RegFileBinLocation)
     copyBinFile(ops1);
 end
 
-if ops.interpolateAcrossPlanes == 1 && ~isempty(RegFileBinLocation)
-    folder = fullfile(ops1{i}.RegFileBinLocation, ops1{i}.mouse_name, ...
-        ops1{i}.date, ops.CharSubDirs, 'interpolated');
-    filename = fullfile(folder, ...
-        sprintf('%s_%s_%s_plane%d.bin', ops.mouse_name, ops.date, ...
-        ops.CharSubDirs, i));
-    if ismember(i, planesToInterp)
-        fidCopy = fopen(ops1{i}.RegFile, 'w');
-        fidOrig = fopen(filename, 'r');
-        sz = ops1{i}.Lx * ops1{i}.Ly;
-        parts = ceil(sum(ops1{i}.Nframes) / 2000);
-        for p = 1:parts
-            toRead = 2000;
-            if p == parts
-                toRead = sum(ops1{i}.Nframes) - 2000 * (parts-1);
+if ops.interpolateAcrossPlanes == 1 && ~isempty(ops.RegFileBinLocation)
+    for i = 1:numel(ops1)
+        folder = fullfile(ops1{i}.RegFileBinLocation, ops1{i}.mouse_name, ...
+            ops1{i}.date, ops.CharSubDirs, 'interpolated');
+        filename = fullfile(folder, ...
+            sprintf('%s_%s_%s_plane%d.bin', ops.mouse_name, ops.date, ...
+            ops.CharSubDirs, i));
+        if ismember(i, planesToInterp)
+            fidCopy = fopen(ops1{i}.RegFile, 'w');
+            fidOrig = fopen(filename, 'r');
+            sz = ops1{i}.Lx * ops1{i}.Ly;
+            parts = ceil(sum(ops1{i}.Nframes) / 2000);
+            for p = 1:parts
+                toRead = 2000;
+                if p == parts
+                    toRead = sum(ops1{i}.Nframes) - 2000 * (parts-1);
+                end
+                data = fread(fidOrig,  sz*toRead, '*int16');
+                fwrite(fidCopy, data, class(data));
             end
-            data = fread(fidOrig,  sz*toRead, '*int16');
-            fwrite(fidCopy, data, class(data));
+            fclose(fidCopy);
+            fclose(fidOrig);
+        else
+            delete(filename)
         end
-        fclose(fidCopy);
-        fclose(fidOrig);
-    else
-        delete(filename)
     end
 end
 
@@ -364,6 +379,7 @@ else
     end
 end
 
+
 savepath = sprintf('%s/', ops.ResultsSavePath);
 if ~exist(savepath, 'dir')
     mkdir(savepath)
@@ -376,9 +392,4 @@ else
     save(sprintf('%s/regops_%s_%s.mat', ops.ResultsSavePath, ...
         ops.mouse_name, ops.date),  'ops1')
 end
-
-
-%save(sprintf('%s/F_%s_%s_plane%d.mat', ops.ResultsSavePath, ...
-%   ops.mouse_name, ops.date, iplane), 'ops')
-
 %%
