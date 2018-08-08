@@ -31,10 +31,10 @@ This gets rid of the pre-defined folder structure that contains both ``mouse_nam
 
 
 ### Standard setup
-To run Suite2P (and omit the mouse_name/date folder structure) it is now assumed that:
-- The data folder (``RootDir``) contains all the .tif files that should be analyzed together and they have some logical ordering such that ``natsort`` can take care of putting them into the right order.
-- I keep the following folders all the same: ``RootDir`` = ``RootStorage`` = ``RegFileRoot`` = ``ResultsSavePath`` = ``RegFileTiffLocation``. This saves everything (including registered tif files) to the original data folder. ``temp_tiff`` is set to a local drive.
-- The tif files are either scanimage big tifs with different channels being chained together like *channel1-channel2-channel1-channel2-...* or mimic this structure (either uint16 or int16).
+To run Suite2P (and omit the mouse_name/date folder structure):
+- It is now assumed that the data folder (``RootDir``) contains all the .tif files that should be analyzed together and they have some logical ordering such that ``natsort`` can take care of putting them into the right order.
+- I keep the following folders all the same: ``RootDir`` = ``RootStorage`` = ``RegFileRoot`` = ``ResultsSavePath`` = ``RegFileTiffLocation``: Those are all network/fileserver locations. This saves everything (including registered tif files) to the original data folder. ``temp_tiff`` is set to a local drive.
+- The tif files are either scanimage bigtifs with different channels being chained together like *channel1-channel2-channel1-channel2-...* or mimic this structure (either uint16 or int16).
 - If the data contains a second (red, non-signal) channel, then the setup should be:
 ```
 db.expred                 = 1;
