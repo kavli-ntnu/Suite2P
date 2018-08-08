@@ -2,6 +2,8 @@
 
 Forked from [Suite2p: fast, accurate and complete two-photon pipeline](https://github.com/cortex-lab/Suite2P) on 05.04.2018. Added [OASIS](https://github.com/zhoupc/OASIS_matlab) on same date. Algorithmic details in [http://biorxiv.org/content/early/2016/06/30/061507](http://biorxiv.org/content/early/2016/06/30/061507).
 
+### Last commit
+Last commit taken over from master in original repo: 08003ee6ec9a4a4ad87e600dcc053063b02ddac9
 
 ### Changes
 Made independent of the original "forced" folder structure (Mouse/Date/) to be able to call .tif folders directly. If ``mouse_name`` does not exist in make_db, process with non-prefixed folder structure.
@@ -38,7 +40,7 @@ To run Suite2P (and omit the mouse_name/date folder structure) it is now assumed
 db.expred                 = 1;
 db.nchannels              = 2;
 db.nchannels_red          = 2;
-db.AlignToRedChannel      = 0; % Change this if red channel has nice structural signal
+db.AlignToRedChannel      = 0; % Change this to 1 if red channel has nice structural signal
 db.REDbinary              = 1;
 db.redMeanImg             = 1;
 ```
