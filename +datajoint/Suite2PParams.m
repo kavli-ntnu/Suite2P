@@ -6,6 +6,7 @@
         comments = ""                :   varchar(1000)    # Comments (Suite2P internal field)
         mouse_name  = ""             :   varchar(50)      # Mouse name-creating folder
         expts  = ""                  :   varchar(50)      # Experiment names folders
+        expred = ""                  :   varchar(10)      # Red experiment - 1 means yes, red channel is present, empty means no red channel;
         nchannels                    :   int              # Number of channels
         nchannels_red                :   varchar(10)      # How many channels did the red block have in total (assumes red is last)
         aligntoredchannel = 0        :   int              # Align to red channel?

@@ -68,6 +68,7 @@ classdef Suite2PCompute < dj.Computed
         repository_name = fetch1(datajoint.Suite2PJobs & key,'repository_name');    
         tif_path_ = fetch1(datajoint.Suite2PJobs & key,'tif_path');
         diameter = fetch1(datajoint.Suite2PJobs & key,'diameter');
+        aligntored = fetch1(datajoint.Suite2PJobs & key,'aligntored');
         imagerate = fetch1(datajoint.Suite2PJobs & key,'imagerate');
         job_param_name = fetch1(datajoint.Suite2PJobs & key,'job_param_name');
         suite_params = fetch(datajoint.Suite2PParams & sprintf('job_param_name = "%s"',job_param_name),'*');
@@ -88,6 +89,14 @@ classdef Suite2PCompute < dj.Computed
             error('Path to tifs not found on this computer.');
         end
         
+        % Check expred
+        expred = suite_params.expred; 
+        if isempty(expred)
+            db.expred = [];
+        else
+            db.expred = 1; % Set to 1 by default since there is only on session per folder
+        end
+        
         % Following the suite2p structure ...
         db.RootDir = tif_path;
         db.RootStorage = tif_path;
@@ -100,10 +109,9 @@ classdef Suite2PCompute < dj.Computed
         db.mouse_name             = suite_params.mouse_name;
         db.expts                  = suite_params.expts; 
         db.diameter               = diameter;
-        db.expred                 = 1; % Comment Horst: Not really needed.But needs to be something.
         db.nchannels              = suite_params.nchannels; %
         db.nchannels_red          = str2num(suite_params.nchannels_red); 
-        db.AlignToRedChannel      = suite_params.aligntoredchannel;
+        db.AlignToRedChannel      = aligntored;
         db.DeleteBin              = suite_params.deletebin; 
         db.REDbinary              = suite_params.redbinary; 
         db.redMeanImg             = suite_params.redmeanimg; 
