@@ -10,7 +10,10 @@ for j = 1:numel(h.dat.Fcell)
     Fneu = cat(2, Fneu, h.dat.FcellNeu{j}(ichosen, :));
 end
 
-plot(my_conv_local(medfilt1(double(F), 3), 3))
+%plot(my_conv_local(medfilt1(double(F), 3), 3))
+%plot(medfilt1(double(F), 3))
+plot(my_conv_local(double(F),1))
+
 axis tight
 hold on
 
